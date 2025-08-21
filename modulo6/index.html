@@ -3,92 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lista de Tarefas</title>
+    <title>Botão Curtir</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             padding: 20px;
-            background-color: #f4f4f4;
         }
-        h1 {
-            color: #333;
-        }
-        #nova-tarefa {
-            width: 300px;
+        input, button {
             padding: 8px;
             font-size: 16px;
         }
-        #adicionar {
-            padding: 8px 12px;
-            font-size: 16px;
+        button {
             cursor: pointer;
         }
-        ul {
-            list-style-type: none;
-            padding-left: 0;
-        }
-        li {
-            display: flex;
-            align-items: center;
-            margin-bottom: 8px;
-        }
-        li.completed span {
-            text-decoration: line-through;
-            color: gray;
-        }
-        li span {
-            margin-left: 8px;
+        p {
+            margin-top: 20px;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
-    <h1>Lista de Tarefas</h1>
-    <input type="text" id="nova-tarefa" placeholder="Digite uma tarefa">
-    <button id="adicionar">Adicionar</button>
-
-    <ul id="lista-tarefas"></ul>
+    <h1>Botão Curtir</h1>
+    <input type="text" id="nome" placeholder="Digite seu nome">
+    <button id="curtir">Curtir</button>
+    <p id="paragrafo">Ninguém curtiu</p>
 
     <script>
-        // Array para armazenar as tarefas
-        const tarefas = [];
+        const nomes = [];
 
-        const inputTarefa = document.getElementById('nova-tarefa');
-        const btnAdicionar = document.getElementById('adicionar');
-        const listaTarefas = document.getElementById('lista-tarefas');
+        const inputNome = document.getElementById('nome');
+        const btnCurtir = document.getElementById('curtir');
+        const paragrafo = document.getElementById('paragrafo');
 
-        // Função para renderizar a lista
-        function renderizarTarefas() {
-            listaTarefas.innerHTML = '';
-            tarefas.forEach((tarefa, index) => {
-                const li = document.createElement('li');
-                if (tarefa.status) li.classList.add('completed');
-
-                const checkbox = document.createElement('input');
-                checkbox.type = 'checkbox';
-                checkbox.checked = tarefa.status;
-                checkbox.addEventListener('change', () => {
-                    tarefa.status = checkbox.checked;
-                    renderizarTarefas();
-                });
-
-                const span = document.createElement('span');
-                span.textContent = tarefa.descricao;
-
-                li.appendChild(checkbox);
-                li.appendChild(span);
-                listaTarefas.appendChild(li);
-            });
-        }
-
-        // Evento para adicionar nova tarefa
-        btnAdicionar.addEventListener('click', () => {
-            const descricao = inputTarefa.value.trim();
-            if (descricao !== '') {
-                tarefas.push({ descricao, status: false });
-                inputTarefa.value = '';
-                renderizarTarefas();
+        btnCurtir.addEventListener('click', () => {
+            const nome = inputNome.value.trim();
+            if (nome !== '' && !nomes.includes(nome)) {
+                nomes.push(nome);
+                inputNome.value = '';
+                atualizarParagrafo();
             }
         });
+
+        function atualizarParagrafo() {
+            const total = nomes.length;
+            if (total === 0) {
+                paragrafo.textContent = "Ninguém curtiu";
+            } else if (total === 1) {
+                paragrafo.textContent = `${nomes[0]} curtiu`;
+            } else if (total === 2) {
+                paragrafo.textContent = `${nomes[0]} e ${nomes[1]} curtiram`;
+            } else {
+                paragrafo.textContent = `${nomes[0]}, ${nomes[1]} e mais ${total - 2} pessoas curtiram`;
+            }
+        }
     </script>
 </body>
 </html>
