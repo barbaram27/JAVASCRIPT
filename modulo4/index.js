@@ -1,4 +1,3 @@
-
 // Array que vai armazenar os livros
 let estoque = [];
 
@@ -20,7 +19,19 @@ function adicionarLivro(titulo, autor, quantidade) {
         console.log(`Livro "${titulo}" adicionado com sucesso!`);
     }
 }
-function atualizarQuantidade(titulo, novaQuantidade) {
+function removerLivro(titulo) {
+    // Encontra o índice do livro
+    let index = estoque.findIndex(livro => livro.titulo === titulo);
+    
+    if (index !== -1) {
+        estoque.splice(index, 1);
+        console.log(`Livro "${titulo}" removido com sucesso!`);
+    } else {
+        console.log(`Livro "${titulo}" não encontrado no estoque.`);
+    }
+}
+function atualizarQuantidade(
+titulo, novaQuantidade) {
     let livro = estoque.find(livro => livro.titulo === titulo);
     
     if (livro) {
