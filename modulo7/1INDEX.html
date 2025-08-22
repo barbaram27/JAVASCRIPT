@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mini Twitter - Feed</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding-top: 120px;
+      background: #f5f8fa;
+    }
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      background: #1DA1F2;
+      padding: 20px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      z-index: 1000;
+    }
+    header form {
+      display: flex;
+      gap: 10px;
+      max-width: 600px;
+      margin: auto;
+    }
+    textarea {
+      flex: 1;
+      padding: 10px;
+      resize: none;
+      font-size: 14px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+    button {
+      background: #0d8ddb;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    button:hover {
+      background: #0b78bb;
+    }
+    #feed {
+      max-width: 600px;
+      margin: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .post {
+      background: white;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .post-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .post-header img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+    }
+    .post-text {
+      margin: 10px 0;
+      font-size: 15px;
+    }
+    .post img.cat {
+      width: 100%;
+      border-radius: 8px;
+      margin: 10px 0;
+    }
+    .likes {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .like-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+      color: #e0245e;
+    }
+    .like-btn:hover {
+      transform: scale(1.1);
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <form id="formPost">
+      <textarea id="textoPost" rows="2" placeholder="O que está acontecendo?"></textarea>
+      <button type="submit">Postar</button>
+    </form>
+  </header>
+
+  <main id="feed"></main>
+
+  <script>
+    const feed = document.getElementById('feed');
+    const formPost = document.getElementById('formPost');
+    const textoPost = document.getElementById('textoPost');
+
+    // Estrutura: cada post é um objeto
+    let posts = [];
+
+    // Dados fixos para simular usuário logado
+    const usuario = {
+      nome: "MeuUsuário",
+      avatar: "https://i.pravatar.cc/150?img=12"
+    };
+
+    // Função para criar um post
+    async function criarPost(texto) {
+      // Buscar imagem de gato na API
+      let imagemGato = '';
+      try {
+        const resp = await fetch("https://api.thecatapi.com/v1/images/search");
+        const dados = await resp.json();
+        imagemGato = dados[0].url;
+      } catch (err) {
+        console.error("Erro ao carregar imagem de gato", err);
+      }
+
+      const novoPost = {
+        data: new Date(),
+        usuario: usuario.nome,
+        avatar: usuario.avatar,
+        texto: texto,
+        imagem: imagemGato,
+        likes: 0
+      };
+
+      // Adicionar no início (mais recente primeiro)
+      posts.unshift(novoPost);
+      renderizarFeed();
+    }
+
+    // Renderizar todos os posts
+    function renderizarFeed() {
+      feed.innerHTML = '';
+      posts.forEach((post, index) => {
+        const div = document.createElement('div');
+        div.classList.add('post');
+        div.innerHTML = `
+          <div class="post-header">
+            <img src="${post.avatar}" alt="Avatar">
+            <strong>${post.usuario}</strong>
+          </div>
+          <div class="post-text">${post.texto}</div>
+          ${post.imagem ? `<img src="${post.imagem}" class="cat" alt="Gatinho fofinho">` : ""}
+          <div class="likes">
+            <button class="like-btn">❤️</button>
+            <span>${post.likes} curtidas</span>
+          </div>
+        `;
+
+        // Botão de curtir
+        div.querySelector('.like-btn').addEventListener('click', () => {
+          post.likes++;
+          renderizarFeed();
+        });
+
+        feed.appendChild(div);
+      });
+    }
+
+    // Evento do formulário
+    formPost.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const texto = textoPost.value.trim();
+      if (texto) {
+        criarPost(texto);
+        textoPost.value = '';
+      }
+    });
+  </script>
+</body>
+</html>
